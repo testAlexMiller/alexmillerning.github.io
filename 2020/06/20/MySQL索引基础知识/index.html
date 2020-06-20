@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<!--[if lte IE 8 ]>
+<html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<!--
+***************  *      *     *
+      8          *    *       *
+      8          *  *         *
+      8          **           *
+      8          *  *         *
+      8          *    *       *
+      8          *      *     *
+      8          *        *   ***********    -----Theme By Kieran(http://go.kieran.top)
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<!--<![endif]-->
+
+<head>
+  <title>MySQL索引基础知识 | Alex</title>
+  <!-- Meta data -->
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content="Alex">
+    <meta name="author" content="Alex Ning">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    <!-- Favicon, (keep icon in root folder) -->
+    <link rel="Shortcut Icon" href="/alexmillerning.github.io/img/favicon.ico" type="image/ico">
+
+    <link rel="alternate" href="/atom.xml" title="Alex" type="application/atom+xml">
+    <link rel="stylesheet" href="/alexmillerning.github.io/css/all.css" media="screen" type="text/css">
+    
+    <link rel="stylesheet" href="/alexmillerning.github.io/highlightjs/vs.css" type="text/css">
+    
+
+    <!--[if IE 8]>
+    <link rel="stylesheet" type="text/css" href="/alexmillerning.github.io/css/ie8.css" />
+    <![endif]-->
+
+    <!-- jQuery | Load our jQuery, with an alternative source fallback to a local version if request is unavailable -->
+    <script src="/alexmillerning.github.io/js/jquery-1.11.1.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-1.11.1.min.js"><\/script>')</script>
+
+    <!-- Load these in the <head> for quicker IE8+ load times -->
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="/alexmillerning.github.io/js/html5shiv.min.js"></script>
+    <script src="/alexmillerning.github.io/js/respond.min.js"></script>
+    <![endif]-->
+
+  
+  
+  
+
+  <style>.col-md-8.col-md-offset-2.opening-statement img{display:none;}</style>
+</head>
+
+<!--
+<body class="post-template">
+-->
+<body id="index" class="lightnav animsition">
+
+      <!-- ============================ Off-canvas navigation =========================== -->
+
+    <div class="sb-slidebar sb-right sb-style-overlay sb-momentum-scrolling">
+        <div class="sb-close" aria-label="Close Menu" aria-hidden="true">
+            <img src="/alexmillerning.github.io/img/close.png" alt="Close"/>
+        </div>
+        <!-- Lists in Slidebars -->
+        <ul class="sb-menu">
+            <li><a href="/alexmillerning.github.io/" class="animsition-link" title="Home">Home</a></li>
+            <li><a href="/alexmillerning.github.io/archives" class="animsition-link" title="archive">archives</a></li>
+            <!-- Dropdown Menu -->
+			 
+            <li>
+                <a class="sb-toggle-submenu">Works<span class="sb-caret"></span></a>
+                <ul class="sb-submenu">
+                    
+                        <li><a href="https://testalexmiller.github.io/alexmillerning.github.io/2020/06/20/Redis%E5%AE%89%E8%A3%85/" target="_BLANK" class="animsition-link">Redis</a></li>
+                    
+                        <li><a href="/atom.xml" target="_BLANK" class="animsition-link">MySQL</a></li>
+                    
+                </ul>
+            </li>
+            
+            
+        	<li>
+        		<a class="sb-toggle-submenu">Categories<span class="sb-caret"></span></a>
+            	<ul class="sb-submenu">
+				  	
+				    <li><a href="/alexmillerning.github.io/categories/SpringCloud/Eureka/" class="animsition-link">Eureka<small>(1)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/MySQL/" class="animsition-link">MySQL<small>(14)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/Redis/" class="animsition-link">Redis<small>(3)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/SpringCloud/Ribbon/" class="animsition-link">Ribbon<small>(1)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/SpringBoot/" class="animsition-link">SpringBoot<small>(3)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/SpringCloud/" class="animsition-link">SpringCloud<small>(2)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/MySQL/索引/" class="animsition-link">索引<small>(5)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/MySQL/视图/" class="animsition-link">视图<small>(5)</small></a></li>
+				    
+				    <li><a href="/alexmillerning.github.io/categories/MySQL/触发器/" class="animsition-link">触发器<small>(4)</small></a></li>
+				    
+				</ul>
+        	</li>
+			
+            
+            <li>
+                <a class="sb-toggle-submenu">Links<span class="sb-caret"></span></a>
+                <ul class="sb-submenu">
+                    
+                    <li><a href="https://testalexmiller.github.io/alexmillerning.github.io/" target="_blank" rel="noopener" class="animsition-link">Alex</a></li>
+                    
+                </ul>
+            </li>
+            
+        </ul>
+        <!-- Lists in Slidebars -->
+        <ul class="sb-menu secondary">
+            
+            <li><a href="/alexmillerning.github.io/about.html" class="animsition-link" title="about">About</a></li>
+            <li><a href="/alexmillerning.github.io/atom.xml" class="animsition-link" title="rss">RSS</a></li>
+        </ul>
+    </div>
+    
+    <!-- ============================ END Off-canvas navigation =========================== -->
+
+    <!-- ============================ #sb-site Main Page Wrapper =========================== -->
+
+    <div id="sb-site">
+        <!-- #sb-site - All page content should be contained within this id, except the off-canvas navigation itself -->
+
+        <!-- ============================ Header & Logo bar =========================== -->
+
+        <div id="navigation" class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <!-- Nav logo -->
+                    <div class="logo">
+                        <a href="/" title="Logo" class="animsition-link">
+                         <img src="/alexmillerning.github.io/img/logo.png" alt="Logo" width="35px;"/> 
+                        </a>
+                    </div>
+                    <!-- // Nav logo -->
+                    <!-- Info-bar -->
+                    <nav>
+                        <ul class="nav">
+                            <li><a href="/" class="animsition-link">Alex</a></li>
+                            <li class="nolink"><span>Always </span>Creative.</li>
+                            
+                            <li><a href="https://github.com/" title="Github" target="_blank"><i class="icon-github"></i></a></li>
+                            
+                            
+                            <li><a href="https://twitter.com/" title="Twitter" target="_blank"><i class="icon-twitter"></i></a></li>
+                            
+                            
+                            <li><a href="https://www.facebook.com/" title="Facebook" target="_blank"><i class="icon-facebook"></i></a></li>
+                            
+                            
+                            <li><a href="https://google.com/" title="Google-Plus" target="_blank"><i class="icon-google-plus"></i></a></li>
+                            
+                            
+                            <li><a href="http://weibo.com/" title="Sina-Weibo" target="_blank"><i class="icon-sina-weibo"></i></a></li>
+                            
+                            <li class="nolink"><span>Welcome!</span></li>
+                        </ul>
+                    </nav>
+                    <!--// Info-bar -->
+                </div>
+                <!-- // .container -->
+                <div class="learnmore sb-toggle-right">More</div>
+                <button type="button" class="navbar-toggle menu-icon sb-toggle-right" title="More">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar before"></span>
+                <span class="icon-bar main"></span>
+                <span class="icon-bar after"></span>
+                </button>
+            </div>
+            <!-- // .navbar-inner -->
+        </div>
+
+        <!-- ============================ Header & Logo bar =========================== -->
+
+
+      
+<section id="intro">
+    <div class="container">
+        <div class="row col-md-offset-2">
+            <div class="col-md-8">
+    			<span class="post-meta">
+      <time datetime="2020-06-20T13:40:00.000Z" itemprop="datePublished">
+          2020-06-20
+      </time>
+    
+    
+    | 
+    <a href='/alexmillerning.github.io/tags/MySQL/'>MySQL</a>,
+    
+    <a href='/alexmillerning.github.io/tags/索引/'>索引</a>
+    
+    
+</span>
+                <h1>MySQL索引基础知识</h1>
+            </div>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+      		<p>欢迎来到我的私人<a href="https://testalexmiller.github.io/alexmillerning.github.io/" target="_blank" rel="noopener">笔记</a>!该笔记摘录网上资源并加入个人总结,相关内容仅仅用于个人记录和学习,特此申明!!! </p>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>索引是 MySQL 中一种十分重要的数据库对象。它是数据库性能调优技术的基础，常用于实现数据的快速检索。<br>索引就是根据表中的一列或若干列按照一定顺序建立的列值与记录行之间的对应关系表，实质上是一张描述索引列的列值与原表中记录行之间一一对应关系的有序表。</p>
+<h2 id="访问数据的两种方式"><a href="#访问数据的两种方式" class="headerlink" title="访问数据的两种方式"></a>访问数据的两种方式</h2><ul>
+<li>顺序访问<br>顺序访问是在表中实行全表扫描，从头到尾逐行遍历，直到在无序的行数据中找到符合条件的目标数据。这种方式实现比较简单，但是当表中有大量数据的时候，效率非常低下。例如，在几千万条数据中查找少量的数据时，使用顺序访问方式将会遍历所有的数据，花费大量的时间，显然会影响数据库的处理性能。</li>
+<li>索引访问<br>索引访问是通过遍历索引来直接访问表中记录行的方式。使用这种方式的前提是对表建立一个索引，在列上创建了索引之后，查找数据时可以直接根据该列上的索引找到对应记录行的位置，从而快捷地查找到数据。索引存储了指定列数据值的指针，根据指定的排序顺序对这些指针排序。</li>
+</ul>
+<h2 id="索引分类"><a href="#索引分类" class="headerlink" title="索引分类"></a>索引分类</h2><h3 id="根据存储方式的不同，MySQL-中常用的索引在物理上分为以下两类"><a href="#根据存储方式的不同，MySQL-中常用的索引在物理上分为以下两类" class="headerlink" title="根据存储方式的不同，MySQL 中常用的索引在物理上分为以下两类"></a>根据存储方式的不同，MySQL 中常用的索引在物理上分为以下两类</h3><h4 id="1-B-树索引"><a href="#1-B-树索引" class="headerlink" title="1. B-树索引"></a>1. B-树索引</h4><p>B-树索引又称为 BTREE 索引，目前大部分的索引都是采用 B-树索引来存储的。B-树索引是一个典型的数据结构，其包含的组件主要有以下几个：</p>
+<ul>
+<li>叶子节点：包含的条目直接指向表里的数据行。叶子节点之间彼此相连，一个叶子节点有一个指向下一个叶子节点的指针。</li>
+<li>分支节点：包含的条目指向索引里其他的分支节点或者叶子节点。</li>
+<li>根节点：一个 B-树索引只有一个根节点，实际上就是位于树的最顶端的分支节点。</li>
+</ul>
+<p>基于这种树形数据结构，表中的每一行都会在索引上有一个对应值。因此，在表中进行数据查询时，可以根据索引值一步一步定位到数据所在的行。</p>
+<p>B-树索引可以进行全键值、键值范围和键值前缀查询，也可以对查询结果进行 ORDER BY 排序。但 B-树索引必须遵循左边前缀原则，要考虑以下几点约束：</p>
+<ul>
+<li>查询必须从索引的最左边的列开始。</li>
+<li>查询不能跳过某一索引列，必须按照从左到右的顺序进行匹配。</li>
+<li>存储引擎不能使用索引中范围条件右边的列。</li>
+</ul>
+<h4 id="2-哈希索引"><a href="#2-哈希索引" class="headerlink" title="2. 哈希索引"></a>2. 哈希索引</h4><p>哈希（Hash）一般翻译为“散列”，也有直接音译成“哈希”的，就是把任意长度的输入（又叫作预映射，pre-image）通过散列算法变换成固定长度的输出，该输出就是散列值。</p>
+<p>哈希索引也称为散列索引或 HASH 索引。MySQL 目前仅有 MEMORY 存储引擎和 HEAP 存储引擎支持这类索引。其中，MEMORY 存储引擎可以支持 B- 树索引和 HASH 索引，且将 HASH 当成默认索引。</p>
+<p>HASH 索引不是基于树形的数据结构查找数据，而是根据索引列对应的哈希值的方法获取表的记录行。哈希索引的最大特点是访问速度快，但也存在下面的一些缺点：</p>
+<ul>
+<li>MySQL 需要读取表中索引列的值来参与散列计算，散列计算是一个比较耗时的操作。也就是说，相对于 B- 树索引来说，建立哈希索引会耗费更多的时间。</li>
+<li>不能使用 HASH 索引排序。</li>
+<li>HASH 索引只支持等值比较，如“=”“IN()”或“&lt;=&gt;”。</li>
+<li>HASH 索引不支持键的部分匹配，因为在计算 HASH 值的时候是通过整个索引值来计算的。</li>
+</ul>
+<h3 id="根据索引的具体用途，MySQL-中的索引在逻辑上分为以下-5-类"><a href="#根据索引的具体用途，MySQL-中的索引在逻辑上分为以下-5-类" class="headerlink" title="根据索引的具体用途，MySQL 中的索引在逻辑上分为以下 5 类"></a>根据索引的具体用途，MySQL 中的索引在逻辑上分为以下 5 类</h3><h4 id="1-普通索引"><a href="#1-普通索引" class="headerlink" title="1. 普通索引"></a>1. 普通索引</h4><p>普通索引是最基本的索引类型，唯一任务是加快对数据的访问速度，没有任何限制。创建普通索引时，通常使用的关键字是 INDEX 或 KEY。</p>
+<h4 id="2-唯一性索引"><a href="#2-唯一性索引" class="headerlink" title="2. 唯一性索引"></a>2. 唯一性索引</h4><p>唯一性索引是不允许索引列具有相同索引值的索引。如果能确定某个数据列只包含彼此各不相同的值，在为这个数据列创建索引的时候就应该用关键字 UNIQUE 把它定义为一个唯一性索引。<br>创建唯一性索引的目的往往不是为了提高访问速度，而是为了避免数据出现重复。</p>
+<h4 id="3-主键索引"><a href="#3-主键索引" class="headerlink" title="3. 主键索引"></a>3. 主键索引</h4><p>主键索引是一种唯一性索引，即不允许值重复或者值为空，并且每个表只能有一个主键。主键可以在创建表的时候指定，也可以通过修改表的方式添加，必须指定关键字 PRIMARY KEY。<br><strong>注意：主键是数据库考察的重点。注意每个表只能有一个主键。</strong></p>
+<h4 id="3-空间索引"><a href="#3-空间索引" class="headerlink" title="3. 空间索引"></a>3. 空间索引</h4><p>空间索引主要用于地理空间数据类型 GEOMETRY。</p>
+<h4 id="5-全文索引"><a href="#5-全文索引" class="headerlink" title="5. 全文索引"></a>5. 全文索引</h4><p>全文索引只能在 VARCHAR 或 TEXT 类型的列上创建，并且只能在 MyISAM 表中创建</p>
+<p>索引在逻辑上分为以上 5 类，但在实际使用中，索引通常被创建成单列索引和组合索引。</p>
+<ul>
+<li>单列索引就是索引只包含原表的一个列。</li>
+<li>组合索引也称为复合索引或多列索引，相对于单列索引来说，组合索引是将原表的多个列共同组成一个索引。</li>
+</ul>
+<h2 id="索引的使用原则和注意事项"><a href="#索引的使用原则和注意事项" class="headerlink" title="索引的使用原则和注意事项"></a>索引的使用原则和注意事项</h2><p>虽然索引可以加快查询速度，提高 MySQL 的处理性能，但是过多地使用索引也会造成以下弊端：</p>
+<ul>
+<li>创建索引和维护索引要耗费时间，这种时间随着数据量的增加而增加。</li>
+<li>除了数据表占数据空间之外，每一个索引还要占一定的物理空间。如果要建立聚簇索引，那么需要的空间就会更大。</li>
+<li>当对表中的数据进行增加、删除和修改的时候，索引也要动态地维护，这样就降低了数据的维护速度。</li>
+</ul>
+<p><strong>注意：索引可以在一些情况下加速查询，但是在某些情况下，会降低效率。</strong></p>
+<p>索引只是提高效率的一个因素，因此在建立索引的时候应该遵循以下原则：</p>
+<ul>
+<li>在经常需要搜索的列上建立索引，可以加快搜索的速度。</li>
+<li>在作为主键的列上创建索引，强制该列的唯一性，并组织表中数据的排列结构。</li>
+<li>在经常使用表连接的列上创建索引，这些列主要是一些外键，可以加快表连接的速度。</li>
+<li>在经常需要根据范围进行搜索的列上创建索引，因为索引已经排序，所以其指定的范围是连续的。</li>
+<li>在经常需要排序的列上创建索引，因为索引已经排序，所以查询时可以利用索引的排序，加快排序查询。</li>
+<li>在经常使用 WHERE 子句的列上创建索引，加快条件的判断速度。</li>
+</ul>
+<p>与此对应，在某些应用场合下建立索引不能提高 MySQL 的工作效率，甚至在一定程度上还带来负面效应，降低了数据库的工作效率，一般来说不适合创建索引的环境如下：</p>
+<ul>
+<li>对于那些在查询中很少使用或参考的列不应该创建索引。因为这些列很少使用到，所以有索引或者无索引并不能提高查询速度。相反，由于增加了索引，反而降低了系统的维护速度，并增大了空间要求。</li>
+<li>对于那些只有很少数据值的列也不应该创建索引。因为这些列的取值很少，例如人事表的性别列。查询结果集的数据行占了表中数据行的很大比例，增加索引并不能明显加快检索速度。</li>
+<li>对于那些定义为 TEXT、IMAGE 和 BIT 数据类型的列不应该创建索引。因为这些列的数据量要么相当大，要么取值很少。</li>
+<li>当修改性能远远大于检索性能时，不应该创建索引。因为修改性能和检索性能是互相矛盾的。当创建索引时，会提高检索性能，降低修改性能。当减少索引时，会提高修改性能，降低检索性能。因此，当修改性能远远大于检索性能时，不应该创建索引。</li>
+</ul>
+
+            <div class="clearfix"></div>
+            <hr class="nogutter">
+        </div>
+        <nav class="m-pagination col-md-8 col-md-offset-2 col-sm-24" role="pagination">
+    
+    <a class="pull-left" href="/alexmillerning.github.io/2020/06/20/MySQL%E6%9F%A5%E7%9C%8B%E8%A7%86%E5%9B%BE/" style="float: left;">
+        ← MySQL查看视图
+    </a>
+    
+    
+    <a class="pull-right" href="/alexmillerning.github.io/2020/06/20/MySQL%E8%A7%86%E5%9B%BE%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+        MySQL视图基础知识 →
+    </a>
+    
+</nav>
+
+        <div class="col-md-8 col-md-offset-2 col-sm-24"><script type="text/javascript">
+  /**
+   * 搜狐畅言
+   */
+
+  /*
+  document.write('<div id="SOHUCS" sid="' + window.location.pathname.slice(1) + '" ></div>');
+
+  window.onload = function () {
+    (function () {
+      var appid = 'cytXXXX';
+      var conf = 'prod_xxxxxxxxxxxxxxxxx';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      var loadJs = function (d, a, id) {
+        var c = document.getElementsByTagName("head")[0] || document.head || document.documentElement;
+        var b = document.createElement("script");
+        b.setAttribute("type", "text/javascript");
+        b.setAttribute("charset", "UTF-8");
+        b.setAttribute("src", d);
+        if (id) {
+          b.setAttribute("id", id);
+        }
+        if (typeof a === "function") {
+          if (window.attachEvent) {
+            b.onreadystatechange = function () {
+              var e = b.readyState;
+              if (e === "loaded" || e === "complete") {
+                b.onreadystatechange = null;
+                a()
+              }
+            }
+          } else {
+            b.onload = a
+          }
+        }
+        c.appendChild(b)
+      };
+
+      loadJs("https://changyan.sohu.com/upload/changyan.js", function () {
+        window.changyan.api.config({
+          appid: appid,
+          conf: conf
+        })
+      });
+    })();
+  }
+  */
+
+</script>
+</div>
+    </div>
+</section>
+
+
+      
+<!-- ============================ Footer =========================== -->
+
+<footer>
+    <div class="container">
+            <div class="copy">
+                <p>
+                    &copy; 2014<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script>, Content By Alex Ning. All Rights Reserved.
+                </p>
+                <p>Theme By <a href="//go.kieran.top" target="_blank" rel="noopener" style="color: #767D84">Kieran</a></p>
+            </div>
+            <div class="social">
+                <ul>
+                    
+                    <li><a href="https://github.com/" title="Github" target="_blank"><i class="icon-github"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://twitter.com/" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://www.facebook.com/" title="Facebook" target="_blank"><i class="icon-facebook"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://google.com/" title="Google-Plus" target="_blank"><i class="icon-google-plus"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="http://weibo.com/" title="Sina-Weibo" target="_blank"><i class="icon-sina-weibo"></i></a>&nbsp;</li>
+                    
+                </ul>
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+</footer>
+
+<!-- ============================ END Footer =========================== -->
+      <!-- Load our scripts -->
+<!-- Resizable 'on-demand' full-height hero -->
+<script type="text/javascript">
+    var resizeHero = function () {
+        var hero = $(".cover,.heightblock"),
+            window1 = $(window);
+        hero.css({
+            "height": window1.height()
+        });
+    };
+
+    resizeHero();
+
+    $(window).resize(function () {
+        resizeHero();
+    });
+</script>
+<script src="/alexmillerning.github.io/js/plugins.min.js"></script><!-- Bootstrap core and concatenated plugins always load here -->
+<script src="/alexmillerning.github.io/js/scripts.js"></script><!-- Theme scripts -->
+
+
+<link rel="stylesheet" href="/alexmillerning.github.io/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/alexmillerning.github.io/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$('#intro').find('img').each(function(){
+  var alt = this.alt;
+
+  if (alt){
+    $(this).after('<span class="caption" style="display:none">' + alt + '</span>');
+  }
+
+  $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox" rel="gallery" />');
+});
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+      
+</body>
+</html>
