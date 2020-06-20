@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<!--[if lte IE 8 ]>
+<html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<!--
+***************  *      *     *
+      8          *    *       *
+      8          *  *         *
+      8          **           *
+      8          *  *         *
+      8          *    *       *
+      8          *      *     *
+      8          *        *   ***********    -----Theme By Kieran(http://go.kieran.top)
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<!--<![endif]-->
+
+<head>
+  <title>Redis安装 | Hexo</title>
+  <!-- Meta data -->
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content="Hexo">
+    <meta name="author" content="John Doe">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    <!-- Favicon, (keep icon in root folder) -->
+    <link rel="Shortcut Icon" href="/alexmillerning.github.io/img/favicon.ico" type="image/ico">
+
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="stylesheet" href="/alexmillerning.github.io/css/all.css" media="screen" type="text/css">
+    
+    <link rel="stylesheet" href="/alexmillerning.github.io/highlightjs/vs.css" type="text/css">
+    
+
+    <!--[if IE 8]>
+    <link rel="stylesheet" type="text/css" href="/alexmillerning.github.io/css/ie8.css" />
+    <![endif]-->
+
+    <!-- jQuery | Load our jQuery, with an alternative source fallback to a local version if request is unavailable -->
+    <script src="/alexmillerning.github.io/js/jquery-1.11.1.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-1.11.1.min.js"><\/script>')</script>
+
+    <!-- Load these in the <head> for quicker IE8+ load times -->
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="/alexmillerning.github.io/js/html5shiv.min.js"></script>
+    <script src="/alexmillerning.github.io/js/respond.min.js"></script>
+    <![endif]-->
+
+  
+  
+  
+
+  <style>.col-md-8.col-md-offset-2.opening-statement img{display:none;}</style>
+</head>
+
+<!--
+<body class="post-template">
+-->
+<body id="index" class="lightnav animsition">
+
+      <!-- ============================ Off-canvas navigation =========================== -->
+
+    <div class="sb-slidebar sb-right sb-style-overlay sb-momentum-scrolling">
+        <div class="sb-close" aria-label="Close Menu" aria-hidden="true">
+            <img src="/alexmillerning.github.io/img/close.png" alt="Close"/>
+        </div>
+        <!-- Lists in Slidebars -->
+        <ul class="sb-menu">
+            <li><a href="/alexmillerning.github.io/" class="animsition-link" title="Home">Home</a></li>
+            <li><a href="/alexmillerning.github.io/archives" class="animsition-link" title="archive">archives</a></li>
+            <!-- Dropdown Menu -->
+			 
+            <li>
+                <a class="sb-toggle-submenu">Works<span class="sb-caret"></span></a>
+                <ul class="sb-submenu">
+                    
+                        <li><a href="/" target="_BLANK" class="animsition-link">AAA</a></li>
+                    
+                        <li><a href="/atom.xml" target="_BLANK" class="animsition-link">BBB</a></li>
+                    
+                </ul>
+            </li>
+            
+            
+            
+            <li>
+                <a class="sb-toggle-submenu">Links<span class="sb-caret"></span></a>
+                <ul class="sb-submenu">
+                    
+                    <li><a href="http://go.kieran.top/" target="_blank" rel="noopener" class="animsition-link">Kieran</a></li>
+                    
+                    <li><a href="http://domain.com/" target="_blank" rel="noopener" class="animsition-link">Name</a></li>
+                    
+                </ul>
+            </li>
+            
+        </ul>
+        <!-- Lists in Slidebars -->
+        <ul class="sb-menu secondary">
+            
+            <li><a href="/alexmillerning.github.io/about.html" class="animsition-link" title="about">About</a></li>
+            <li><a href="/alexmillerning.github.io/atom.xml" class="animsition-link" title="rss">RSS</a></li>
+        </ul>
+    </div>
+    
+    <!-- ============================ END Off-canvas navigation =========================== -->
+
+    <!-- ============================ #sb-site Main Page Wrapper =========================== -->
+
+    <div id="sb-site">
+        <!-- #sb-site - All page content should be contained within this id, except the off-canvas navigation itself -->
+
+        <!-- ============================ Header & Logo bar =========================== -->
+
+        <div id="navigation" class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <!-- Nav logo -->
+                    <div class="logo">
+                        <a href="/" title="Logo" class="animsition-link">
+                         <img src="/img/logo.png" alt="Logo" width="35px;"/> 
+                        </a>
+                    </div>
+                    <!-- // Nav logo -->
+                    <!-- Info-bar -->
+                    <nav>
+                        <ul class="nav">
+                            <li><a href="/" class="animsition-link">Hexo</a></li>
+                            <li class="nolink"><span>Always </span>Creative.</li>
+                            
+                            <li><a href="https://github.com/" title="Github" target="_blank"><i class="icon-github"></i></a></li>
+                            
+                            
+                            <li><a href="https://twitter.com/" title="Twitter" target="_blank"><i class="icon-twitter"></i></a></li>
+                            
+                            
+                            <li><a href="https://www.facebook.com/" title="Facebook" target="_blank"><i class="icon-facebook"></i></a></li>
+                            
+                            
+                            <li><a href="https://google.com/" title="Google-Plus" target="_blank"><i class="icon-google-plus"></i></a></li>
+                            
+                            
+                            <li><a href="http://weibo.com/" title="Sina-Weibo" target="_blank"><i class="icon-sina-weibo"></i></a></li>
+                            
+                            <li class="nolink"><span>Welcome!</span></li>
+                        </ul>
+                    </nav>
+                    <!--// Info-bar -->
+                </div>
+                <!-- // .container -->
+                <div class="learnmore sb-toggle-right">More</div>
+                <button type="button" class="navbar-toggle menu-icon sb-toggle-right" title="More">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar before"></span>
+                <span class="icon-bar main"></span>
+                <span class="icon-bar after"></span>
+                </button>
+            </div>
+            <!-- // .navbar-inner -->
+        </div>
+
+        <!-- ============================ Header & Logo bar =========================== -->
+
+
+      
+<section id="intro">
+    <div class="container">
+        <div class="row col-md-offset-2">
+            <div class="col-md-8">
+    			<span class="post-meta">
+      <time datetime="2020-06-20T10:28:00.814Z" itemprop="datePublished">
+          2020-06-20
+      </time>
+    
+</span>
+                <h1>Redis安装</h1>
+            </div>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+      		<p>欢迎来到我的私人<a href="https://testalexmiller.github.io/alexmillerning.github.io/" target="_blank" rel="noopener">笔记</a>!该笔记摘录网上资源并加入个人总结,相关内容仅仅用于个人记录和学习,特此申明!!!</p>
+<h1 id="一-创建redis用户"><a href="#一-创建redis用户" class="headerlink" title="一. 创建redis用户"></a>一. 创建redis用户</h1><h2 id="1-创建用户和用户目录"><a href="#1-创建用户和用户目录" class="headerlink" title="1. 创建用户和用户目录"></a>1. 创建用户和用户目录</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">useradd -m redis</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-设置密码"><a href="#2-设置密码" class="headerlink" title="2. 设置密码"></a>2. 设置密码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd redis</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>示例</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost home]<span class="comment"># useradd -m redis</span></span><br><span class="line">[root@localhost home]<span class="comment"># passwd redis</span></span><br><span class="line">Changing password <span class="keyword">for</span> user redis.</span><br><span class="line">New password: </span><br><span class="line">BAD PASSWORD: The password is shorter than 8 characters</span><br><span class="line">Retype new password: </span><br><span class="line">passwd: all authentication tokens updated successfully.</span><br></pre></td></tr></table></figure>
+
+<h1 id="二-redis安装"><a href="#二-redis安装" class="headerlink" title="二. redis安装"></a>二. redis安装</h1><h2 id="1-下载redis安装包"><a href="#1-下载redis安装包" class="headerlink" title="1. 下载redis安装包"></a>1. 下载redis安装包</h2><ul>
+<li>官网下载相应版本 <a href="https://redis.io/download" target="_blank" rel="noopener">Redis官网地址</a></li>
+<li>直接使用wget命令下载</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://download.redis.io/releases/redis-6.0.5.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-解压"><a href="#2-解压" class="headerlink" title="2. 解压"></a>2. 解压</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -xvf redis-6.0.5.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-进入redis目录并编译"><a href="#3-进入redis目录并编译" class="headerlink" title="3. 进入redis目录并编译"></a>3. 进入redis目录并编译</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> redis-6.0.5/</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-安装redis"><a href="#4-安装redis" class="headerlink" title="4. 安装redis"></a>4. 安装redis</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make PREFIX=/usr/<span class="built_in">local</span>/redis install</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-配置"><a href="#5-配置" class="headerlink" title="5. 配置"></a>5. 配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/redis/etc;</span><br><span class="line">cp /home/redis/redis-6.0.5/redis.conf /usr/<span class="built_in">local</span>/redis/etc</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>报错</strong></p>
+<ul>
+<li><em>注意:自 redis 6.0.0 之后，编译 redis 需要支持 C11 特性,Centos7 默认 gcc 版本为 4.8.5，C11 特性在 4.9 中引入</em></li>
+<li><em>报错信息</em></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">server.c:5152:19: error: ‘struct redisServer’ has no member named ‘sofd’</span><br><span class="line">         <span class="keyword">if</span> (server.sofd &gt; 0)</span><br><span class="line">                   ^</span><br><span class="line">server.c:5153:94: error: ‘struct redisServer’ has no member named ‘unixsocket’</span><br><span class="line">             serverLog(LL_NOTICE,<span class="string">"The server is now ready to accept connections at %s"</span>, server.unixsocket);</span><br><span class="line">                                                                                              ^</span><br><span class="line">server.c:5154:19: error: ‘struct redisServer’ has no member named ‘supervised_mode’</span><br><span class="line">         <span class="keyword">if</span> (server.supervised_mode == SUPERVISED_SYSTEMD) &#123;</span><br><span class="line">                   ^</span><br><span class="line">server.c:5155:24: error: ‘struct redisServer’ has no member named ‘masterhost’</span><br><span class="line">             <span class="keyword">if</span> (!server.masterhost) &#123;</span><br><span class="line">                        ^</span><br><span class="line">server.c:5168:15: error: ‘struct redisServer’ has no member named ‘maxmemory’</span><br><span class="line">     <span class="keyword">if</span> (server.maxmemory &gt; 0 &amp;&amp; server.maxmemory &lt; 1024*1024) &#123;</span><br><span class="line">               ^</span><br><span class="line">server.c:5168:39: error: ‘struct redisServer’ has no member named ‘maxmemory’</span><br><span class="line">     <span class="keyword">if</span> (server.maxmemory &gt; 0 &amp;&amp; server.maxmemory &lt; 1024*1024) &#123;</span><br><span class="line">                                       ^</span><br><span class="line">server.c:5169:176: error: ‘struct redisServer’ has no member named ‘maxmemory’</span><br><span class="line">         serverLog(LL_WARNING,<span class="string">"WARNING: You specified a maxmemory value that is less than 1MB (current value is %llu bytes). Are you sure this is what you really want?"</span>, server.maxmemory);</span><br><span class="line">                                                                                                                                                                                ^</span><br><span class="line">server.c:5172:31: error: ‘struct redisServer’ has no member named ‘server_cpulist’</span><br><span class="line">     redisSetCpuAffinity(server.server_cpulist);</span><br><span class="line">                               ^</span><br><span class="line">server.c: In <span class="keyword">function</span> ‘hasActiveChildProcess’:</span><br><span class="line">server.c:1476:1: warning: control reaches end of non-void <span class="keyword">function</span> [-Wreturn-type]</span><br><span class="line"> &#125;</span><br><span class="line"> ^</span><br><span class="line">server.c: In <span class="keyword">function</span> ‘allPersistenceDisabled’:</span><br><span class="line">server.c:1482:1: warning: control reaches end of non-void <span class="keyword">function</span> [-Wreturn-type]</span><br><span class="line"> &#125;</span><br><span class="line"> ^</span><br><span class="line">server.c: In <span class="keyword">function</span> ‘writeCommandsDeniedByDiskError’:</span><br><span class="line">server.c:3790:1: warning: control reaches end of non-void <span class="keyword">function</span> [-Wreturn-type]</span><br><span class="line"> &#125;</span><br><span class="line"> ^</span><br><span class="line">server.c: In <span class="keyword">function</span> ‘iAmMaster’:</span><br><span class="line">server.c:4964:1: warning: control reaches end of non-void <span class="keyword">function</span> [-Wreturn-type]</span><br><span class="line"> &#125;</span><br><span class="line"> ^</span><br><span class="line">make[1]: *** [server.o] Error 1</span><br><span class="line">make[1]: Leaving directory `/home/redis/redis-6.0.5/src<span class="string">'</span></span><br><span class="line"><span class="string">make: *** [all] Error 2</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决方法</strong></li>
+</ul>
+<p>(1) 安装 Developer Toolset 7 使用 gcc 7 编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum install centos-release-scl</span><br><span class="line">yum install devtoolset-7-gcc</span><br><span class="line">yum install devtoolset-7-libasan-devel</span><br></pre></td></tr></table></figure>
+
+<p>(2) 这不会更新系统原有 gcc 软件包，在当您需要使用 gcc 7 工具链时，使用下列命令进入环境</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /opt/rh/devtoolset-7/<span class="built_in">enable</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="三-非root用户启动配置"><a href="#三-非root用户启动配置" class="headerlink" title="三. 非root用户启动配置"></a>三. 非root用户启动配置</h1><h2 id="1-复制配置文件到用户目录"><a href="#1-复制配置文件到用户目录" class="headerlink" title="1. 复制配置文件到用户目录"></a>1. 复制配置文件到用户目录</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/<span class="built_in">local</span>/redis/etc/redis.conf /home/redis</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-修改配置文件的用户组和用户"><a href="#2-修改配置文件的用户组和用户" class="headerlink" title="2. 修改配置文件的用户组和用户"></a>2. 修改配置文件的用户组和用户</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#修改该配置文件用户和该用户组为redis</span></span><br><span class="line">chown -R redis redis.conf;</span><br><span class="line">chgrp -R redis redis.conf;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-赋予权限"><a href="#3-赋予权限" class="headerlink" title="3. 赋予权限"></a>3. 赋予权限</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#赋予redis用户该配置文件的可读,可写,可执行权限,赋予redis用户组该配置文件的可读,可执行权限</span></span><br><span class="line">chmod -R 750 redis.conf</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-编辑redis-conf文件"><a href="#4-编辑redis-conf文件" class="headerlink" title="4. 编辑redis.conf文件"></a>4. 编辑redis.conf文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置pid文件</span></span><br><span class="line">pidfile /home/redis/pid/redis_6379.pid</span><br><span class="line"><span class="comment">#设置日志路径</span></span><br><span class="line">logfile <span class="string">"/home/redis/logs/redis_6379.log"</span></span><br><span class="line"><span class="comment">#配置持久化文件存放位置</span></span><br><span class="line">dir /home/redis/data/redisData</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-创建文件夹"><a href="#5-创建文件夹" class="headerlink" title="5. 创建文件夹"></a>5. 创建文件夹</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /home/redis/pid /home/redis/logs /home/redis/data/redisData;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四-使用redis用户启动redis"><a href="#四-使用redis用户启动redis" class="headerlink" title="四. 使用redis用户启动redis"></a>四. 使用redis用户启动redis</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#启动</span></span><br><span class="line">/usr/<span class="built_in">local</span>/bin/redis-server /home/redis/redis.conf </span><br><span class="line"><span class="comment">#关闭</span></span><br><span class="line">/usr/<span class="built_in">local</span>/bin/redis-cli shutdown</span><br></pre></td></tr></table></figure>
+
+<h1 id="五-客户端连接"><a href="#五-客户端连接" class="headerlink" title="五. 客户端连接"></a>五. 客户端连接</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#redis-cli –h IP地址 –p 端口 –a 密码</span></span><br><span class="line">redis-cli -h host -p port -a password</span><br><span class="line"><span class="comment">#登录后再输入密码</span></span><br><span class="line">redis-cli</span><br><span class="line">127.0.0.1:6379&gt; auth 123456</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> mykey 123456</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get mykey</span><br><span class="line"><span class="string">"123456"</span></span><br></pre></td></tr></table></figure>
+            <div class="clearfix"></div>
+            <hr class="nogutter">
+        </div>
+        <nav class="m-pagination col-md-8 col-md-offset-2 col-sm-24" role="pagination">
+    
+    
+    <a class="pull-right" href="/alexmillerning.github.io/2020/06/20/hello-world/">
+        Hello World →
+    </a>
+    
+</nav>
+
+        <div class="col-md-8 col-md-offset-2 col-sm-24"><script type="text/javascript">
+  /**
+   * 搜狐畅言
+   */
+
+  /*
+  document.write('<div id="SOHUCS" sid="' + window.location.pathname.slice(1) + '" ></div>');
+
+  window.onload = function () {
+    (function () {
+      var appid = 'cytXXXX';
+      var conf = 'prod_xxxxxxxxxxxxxxxxx';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      var loadJs = function (d, a, id) {
+        var c = document.getElementsByTagName("head")[0] || document.head || document.documentElement;
+        var b = document.createElement("script");
+        b.setAttribute("type", "text/javascript");
+        b.setAttribute("charset", "UTF-8");
+        b.setAttribute("src", d);
+        if (id) {
+          b.setAttribute("id", id);
+        }
+        if (typeof a === "function") {
+          if (window.attachEvent) {
+            b.onreadystatechange = function () {
+              var e = b.readyState;
+              if (e === "loaded" || e === "complete") {
+                b.onreadystatechange = null;
+                a()
+              }
+            }
+          } else {
+            b.onload = a
+          }
+        }
+        c.appendChild(b)
+      };
+
+      loadJs("https://changyan.sohu.com/upload/changyan.js", function () {
+        window.changyan.api.config({
+          appid: appid,
+          conf: conf
+        })
+      });
+    })();
+  }
+  */
+
+</script>
+</div>
+    </div>
+</section>
+
+
+      
+<!-- ============================ Footer =========================== -->
+
+<footer>
+    <div class="container">
+            <div class="copy">
+                <p>
+                    &copy; 2014<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script>, Content By John Doe. All Rights Reserved.
+                </p>
+                <p>Theme By <a href="//go.kieran.top" target="_blank" rel="noopener" style="color: #767D84">Kieran</a></p>
+            </div>
+            <div class="social">
+                <ul>
+                    
+                    <li><a href="https://github.com/" title="Github" target="_blank"><i class="icon-github"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://twitter.com/" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://www.facebook.com/" title="Facebook" target="_blank"><i class="icon-facebook"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://google.com/" title="Google-Plus" target="_blank"><i class="icon-google-plus"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="http://weibo.com/" title="Sina-Weibo" target="_blank"><i class="icon-sina-weibo"></i></a>&nbsp;</li>
+                    
+                </ul>
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+</footer>
+
+<!-- ============================ END Footer =========================== -->
+      <!-- Load our scripts -->
+<!-- Resizable 'on-demand' full-height hero -->
+<script type="text/javascript">
+    var resizeHero = function () {
+        var hero = $(".cover,.heightblock"),
+            window1 = $(window);
+        hero.css({
+            "height": window1.height()
+        });
+    };
+
+    resizeHero();
+
+    $(window).resize(function () {
+        resizeHero();
+    });
+</script>
+<script src="/alexmillerning.github.io/js/plugins.min.js"></script><!-- Bootstrap core and concatenated plugins always load here -->
+<script src="/alexmillerning.github.io/js/scripts.js"></script><!-- Theme scripts -->
+
+
+<link rel="stylesheet" href="/alexmillerning.github.io/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/alexmillerning.github.io/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$('#intro').find('img').each(function(){
+  var alt = this.alt;
+
+  if (alt){
+    $(this).after('<span class="caption" style="display:none">' + alt + '</span>');
+  }
+
+  $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox" rel="gallery" />');
+});
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+      
+</body>
+</html>
