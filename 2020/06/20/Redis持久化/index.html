@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<!--[if lte IE 8 ]>
+<html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<!--
+***************  *      *     *
+      8          *    *       *
+      8          *  *         *
+      8          **           *
+      8          *  *         *
+      8          *    *       *
+      8          *      *     *
+      8          *        *   ***********    -----Theme By Kieran(http://go.kieran.top)
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<!--<![endif]-->
+
+<head>
+  <title>Redis持久化 | Hexo</title>
+  <!-- Meta data -->
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content="Hexo">
+    <meta name="author" content="John Doe">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    <!-- Favicon, (keep icon in root folder) -->
+    <link rel="Shortcut Icon" href="/alexmillerning.github.io/img/favicon.ico" type="image/ico">
+
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="stylesheet" href="/alexmillerning.github.io/css/all.css" media="screen" type="text/css">
+    
+    <link rel="stylesheet" href="/alexmillerning.github.io/highlightjs/vs.css" type="text/css">
+    
+
+    <!--[if IE 8]>
+    <link rel="stylesheet" type="text/css" href="/alexmillerning.github.io/css/ie8.css" />
+    <![endif]-->
+
+    <!-- jQuery | Load our jQuery, with an alternative source fallback to a local version if request is unavailable -->
+    <script src="/alexmillerning.github.io/js/jquery-1.11.1.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-1.11.1.min.js"><\/script>')</script>
+
+    <!-- Load these in the <head> for quicker IE8+ load times -->
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="/alexmillerning.github.io/js/html5shiv.min.js"></script>
+    <script src="/alexmillerning.github.io/js/respond.min.js"></script>
+    <![endif]-->
+
+  
+  
+  
+
+  <style>.col-md-8.col-md-offset-2.opening-statement img{display:none;}</style>
+</head>
+
+<!--
+<body class="post-template">
+-->
+<body id="index" class="lightnav animsition">
+
+      <!-- ============================ Off-canvas navigation =========================== -->
+
+    <div class="sb-slidebar sb-right sb-style-overlay sb-momentum-scrolling">
+        <div class="sb-close" aria-label="Close Menu" aria-hidden="true">
+            <img src="/alexmillerning.github.io/img/close.png" alt="Close"/>
+        </div>
+        <!-- Lists in Slidebars -->
+        <ul class="sb-menu">
+            <li><a href="/alexmillerning.github.io/" class="animsition-link" title="Home">Home</a></li>
+            <li><a href="/alexmillerning.github.io/archives" class="animsition-link" title="archive">archives</a></li>
+            <!-- Dropdown Menu -->
+			 
+            <li>
+                <a class="sb-toggle-submenu">Works<span class="sb-caret"></span></a>
+                <ul class="sb-submenu">
+                    
+                        <li><a href="https://testalexmiller.github.io/alexmillerning.github.io/2020/06/20/Redis%E5%AE%89%E8%A3%85/" target="_BLANK" class="animsition-link">Redis</a></li>
+                    
+                        <li><a href="/atom.xml" target="_BLANK" class="animsition-link">MySQL</a></li>
+                    
+                </ul>
+            </li>
+            
+            
+            
+            <li>
+                <a class="sb-toggle-submenu">Links<span class="sb-caret"></span></a>
+                <ul class="sb-submenu">
+                    
+                    <li><a href="https://testalexmiller.github.io/alexmillerning.github.io/" target="_blank" rel="noopener" class="animsition-link">Alex</a></li>
+                    
+                </ul>
+            </li>
+            
+        </ul>
+        <!-- Lists in Slidebars -->
+        <ul class="sb-menu secondary">
+            
+            <li><a href="/alexmillerning.github.io/about.html" class="animsition-link" title="about">About</a></li>
+            <li><a href="/alexmillerning.github.io/atom.xml" class="animsition-link" title="rss">RSS</a></li>
+        </ul>
+    </div>
+    
+    <!-- ============================ END Off-canvas navigation =========================== -->
+
+    <!-- ============================ #sb-site Main Page Wrapper =========================== -->
+
+    <div id="sb-site">
+        <!-- #sb-site - All page content should be contained within this id, except the off-canvas navigation itself -->
+
+        <!-- ============================ Header & Logo bar =========================== -->
+
+        <div id="navigation" class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <!-- Nav logo -->
+                    <div class="logo">
+                        <a href="/" title="Logo" class="animsition-link">
+                         <img src="/alexmillerning.github.io/img/logo.png" alt="Logo" width="35px;"/> 
+                        </a>
+                    </div>
+                    <!-- // Nav logo -->
+                    <!-- Info-bar -->
+                    <nav>
+                        <ul class="nav">
+                            <li><a href="/" class="animsition-link">Hexo</a></li>
+                            <li class="nolink"><span>Always </span>Creative.</li>
+                            
+                            <li><a href="https://github.com/" title="Github" target="_blank"><i class="icon-github"></i></a></li>
+                            
+                            
+                            <li><a href="https://twitter.com/" title="Twitter" target="_blank"><i class="icon-twitter"></i></a></li>
+                            
+                            
+                            <li><a href="https://www.facebook.com/" title="Facebook" target="_blank"><i class="icon-facebook"></i></a></li>
+                            
+                            
+                            <li><a href="https://google.com/" title="Google-Plus" target="_blank"><i class="icon-google-plus"></i></a></li>
+                            
+                            
+                            <li><a href="http://weibo.com/" title="Sina-Weibo" target="_blank"><i class="icon-sina-weibo"></i></a></li>
+                            
+                            <li class="nolink"><span>Welcome!</span></li>
+                        </ul>
+                    </nav>
+                    <!--// Info-bar -->
+                </div>
+                <!-- // .container -->
+                <div class="learnmore sb-toggle-right">More</div>
+                <button type="button" class="navbar-toggle menu-icon sb-toggle-right" title="More">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar before"></span>
+                <span class="icon-bar main"></span>
+                <span class="icon-bar after"></span>
+                </button>
+            </div>
+            <!-- // .navbar-inner -->
+        </div>
+
+        <!-- ============================ Header & Logo bar =========================== -->
+
+
+      
+<section id="intro">
+    <div class="container">
+        <div class="row col-md-offset-2">
+            <div class="col-md-8">
+    			<span class="post-meta">
+      <time datetime="2020-06-20T13:10:16.608Z" itemprop="datePublished">
+          2020-06-20
+      </time>
+    
+</span>
+                <h1>Redis持久化</h1>
+            </div>
+        </div>
+        <div class="col-md-8 col-md-offset-2">
+      		<p>欢迎来到我的私人<a href="https://testalexmiller.github.io/alexmillerning.github.io/" target="_blank" rel="noopener">笔记</a>!该笔记摘录网上资源并加入个人总结,相关内容仅仅用于个人记录和学习,特此申明!!!<br>该章节内容包括:</p>
+<ul>
+<li>Redis高可用概述</li>
+<li>Redis持久化概述</li>
+<li>RDB持久化</li>
+<li>AOF持久化</li>
+<li>方案选择与常见问题</li>
+</ul>
+<h1 id="一-Redis高可用概述"><a href="#一-Redis高可用概述" class="headerlink" title="一. Redis高可用概述"></a>一. Redis高可用概述</h1><h2 id="Redis高可用的技术实现方式"><a href="#Redis高可用的技术实现方式" class="headerlink" title="Redis高可用的技术实现方式"></a>Redis高可用的技术实现方式</h2><ul>
+<li>持久化：持久化是最简单的高可用方法(有时甚至不被归为高可用的手段)，主要作用是数据备份，即将数据存储在硬盘，保证数据不会因进程退出而丢失。</li>
+<li>复制：复制是高可用Redis的基础，哨兵和集群都是在复制基础上实现高可用的。复制主要实现了数据的多机备份，以及对于读操作的负载均衡和简单的故障恢复。缺陷：故障恢复无法自动化；写操作无法负载均衡；存储能力受到单机的限制。</li>
+<li>哨兵：在复制的基础上，哨兵实现了自动化的故障恢复。缺陷：写操作无法负载均衡；存储能力受到单机的限制。</li>
+<li>集群：通过集群，Redis解决了写操作无法负载均衡，以及存储能力受到单机限制的问题，实现了较为完善的高可用方案。</li>
+</ul>
+<h1 id="二-Redis持久化概述"><a href="#二-Redis持久化概述" class="headerlink" title="二. Redis持久化概述"></a>二. Redis持久化概述</h1><p>持久化的功能：Redis是内存数据库，数据都是存储在内存中，为了避免进程退出导致数据的永久丢失，需要定期将Redis中的数据以某种形式(数据或命令)从内存保存到硬盘；当下次Redis重启时，利用持久化文件实现数据恢复。除此之外，为了进行灾难备份，可以将持久化文件拷贝到一个远程位置。</p>
+<ul>
+<li>RDB持久化：将当前数据保存到硬盘，</li>
+<li>AOF持久化：将每次执行的写命令保存到硬盘（类似于MySQL的binlog）</li>
+</ul>
+<p><strong>由于AOF持久化的实时性更好，即当进程意外退出时丢失的数据更少，因此AOF是目前主流的持久化方式，不过RDB持久化仍然有其用武之地</strong></p>
+<h1 id="三-RDB持久化"><a href="#三-RDB持久化" class="headerlink" title="三. RDB持久化"></a>三. RDB持久化</h1><h2 id="1-触发条件"><a href="#1-触发条件" class="headerlink" title="1. 触发条件"></a>1. 触发条件</h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a>(1) 手动触发</h3><ul>
+<li>save: save命令会阻塞Redis服务器进程，直到RDB文件创建完毕为止，在Redis服务器阻塞期间，服务器不能处理任何命令请求。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; save</span><br><span class="line">OK</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>bgsave: bgsave命令会创建一个子进程，由子进程来负责创建RDB文件，父进程(即Redis主进程)则继续处理请求。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; bgsave</span><br><span class="line">Background saving started</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>save生成的dump.rdb文件存放路径在redis.conf文件中有配置</strong></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The working directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The DB will be written inside this directory, with the filename specified</span></span><br><span class="line"><span class="comment"># above using the 'dbfilename' configuration directive.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The Append Only File will also be created inside this directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Note that you must specify a directory here, not a file name.</span></span><br><span class="line"><span class="attr">dir</span> <span class="string">/home/redis/data/redisData</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-自动触发"><a href="#2-自动触发" class="headerlink" title="(2) 自动触发"></a>(2) 自动触发</h3><ul>
+<li>配置文件save m n</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">################################ SNAPSHOTTING  ################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Save the DB on disk:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   save &lt;seconds&gt; &lt;changes&gt;</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   Will save the DB if both the given number of seconds and the given</span></span><br><span class="line"><span class="comment">#   number of write operations against the DB occurred.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   In the example below the behaviour will be to save:</span></span><br><span class="line"><span class="comment">#   after 900 sec (15 min) if at least 1 key changed</span></span><br><span class="line"><span class="comment">#   after 300 sec (5 min) if at least 10 keys changed</span></span><br><span class="line"><span class="comment">#   after 60 sec if at least 10000 keys changed</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   <span class="doctag">Note:</span> you can disable saving completely by commenting out all "save" lines.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   It is also possible to remove all the previously configured save</span></span><br><span class="line"><span class="comment">#   points by adding a save directive with a single empty string argument</span></span><br><span class="line"><span class="comment">#   like in the following example:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   save ""</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当时间到900秒时,如果redis数据发生了至少1次变化,则执行bgsave</span></span><br><span class="line"><span class="attr">save</span> <span class="string">900 1</span></span><br><span class="line"><span class="comment">#当时间到300秒时,如果redis数据发生了至少10次变化,则执行bgsave</span></span><br><span class="line"><span class="attr">save</span> <span class="string">300 10</span></span><br><span class="line"><span class="comment">#当时间到60秒时,如果redis数据发生了至少10000次变化,则执行bgsave</span></span><br><span class="line"><span class="attr">save</span> <span class="string">60 10000</span></span><br><span class="line"><span class="comment">#当三个save条件满足任意一个时，都会引起bgsave的调用</span></span><br></pre></td></tr></table></figure>
+
+<p>save m n触发bgsave执行时，服务器打印日志的情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2286:M 15 Jun 2020 19:58:30.822 * 10 changes in 300 seconds. Saving...</span><br><span class="line">2286:M 15 Jun 2020 19:58:30.824 * Background saving started by pid 2659</span><br><span class="line">2659:C 15 Jun 2020 19:58:30.828 * DB saved on disk</span><br><span class="line">2659:C 15 Jun 2020 19:58:30.828 * RDB: 4 MB of memory used by copy-on-write</span><br><span class="line">2286:M 15 Jun 2020 19:58:30.927 * Background saving terminated with success</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>在主从复制场景下，如果从节点执行全量复制操作，则主节点会执行bgsave命令，并将rdb文件发送给从节点</p>
+</li>
+<li><p>执行shutdown命令时，自动执行rdb持久化</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">2286:M 15 Jun 2020 23:03:38.999 # User requested shutdown...</span><br><span class="line">2286:M 15 Jun 2020 23:03:38.999 * Saving the final RDB snapshot before exiting.</span><br><span class="line">2286:M 15 Jun 2020 23:03:39.002 * DB saved on disk</span><br><span class="line">2286:M 15 Jun 2020 23:03:39.002 * Removing the pid file.</span><br><span class="line">2286:M 15 Jun 2020 23:03:39.003 # Redis is now ready to exit, bye bye...</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="2-执行流程"><a href="#2-执行流程" class="headerlink" title="2. 执行流程"></a>2. 执行流程</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">%% 这是注释，流程图中用到的各种图形画法、连线</span><br><span class="line">id1[bgsave]--1--&gt;A[父进程]</span><br><span class="line">A --&gt; C(有其他子进程正在执行直接返回)</span><br><span class="line">A --2--&gt;B[fork]</span><br><span class="line">B --3--&gt;E(响应其他命令)</span><br><span class="line">B --&gt;F[子进程]</span><br><span class="line">F --5 信号通知父进程--&gt;A</span><br><span class="line">F --4--&gt;G[生成RDB文件]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>1: Redis父进程首先判断：当前是否在执行save，或bgsave/bgrewriteaof（后面会详细介绍该命令）的子进程，如果在执行则bgsave命令直接返回。bgsave/bgrewriteaof 的子进程不能同时执行，主要是基于性能方面的考虑：两个并发的子进程同时执行大量的磁盘写操作，可能引起严重的性能问题。</p>
+</li>
+<li><p>2: 父进程执行fork操作创建子进程，这个过程中父进程是阻塞的，Redis不能执行来自客户端的任何命令</p>
+</li>
+<li><p>3: 父进程fork后，bgsave命令返回”Background saving started”信息并不再阻塞父进程，并可以响应其他命令</p>
+</li>
+<li><p>4: 子进程创建RDB文件，根据父进程内存快照生成临时快照文件，完成后对原有文件进行原子替换</p>
+</li>
+<li><p>5: 子进程发送信号给父进程表示完成，父进程更新统计信息</p>
+</li>
+</ul>
+<h2 id="3-RDB文件"><a href="#3-RDB文件" class="headerlink" title="3. RDB文件"></a>3. RDB文件</h2><h3 id="1-存储路径"><a href="#1-存储路径" class="headerlink" title="(1) 存储路径"></a>(1) 存储路径</h3><p>RDB文件的存储路径既可以在启动前配置，也可以通过命令动态设定。</p>
+<ul>
+<li><p>配置：dir配置指定目录，dbfilename指定文件名。默认是Redis根目录下的dump.rdb文件。</p>
+</li>
+<li><p>动态设定：Redis启动后也可以动态修改RDB存储路径，在磁盘损害或空间不足时非常有用；执行命令为config set dir {newdir}和config set dbfilename {newFileName}。如下所示(Linux环境)：</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; config <span class="built_in">set</span> dir /home/redis/data </span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; config <span class="built_in">set</span> dbfilename dump6379.rdb</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; bgsave</span><br><span class="line">Background saving started</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-RDB文件格式"><a href="#2-RDB文件格式" class="headerlink" title="(2) RDB文件格式"></a>(2) RDB文件格式</h3><table>
+<thead>
+<tr>
+<th>REDIS</th>
+<th>db_version</th>
+<th>SELECTDB</th>
+<th>0</th>
+<th>pairs</th>
+<th>SELECTDB</th>
+<th>3</th>
+<th>pairs</th>
+<th>EOF</th>
+<th>check_sum</th>
+</tr>
+</thead>
+</table>
+<ul>
+<li>REDIS：常量，保存着”REDIS”5个字符。</li>
+<li>db_version：RDB文件的版本号，注意不是Redis的版本号。</li>
+<li>SELECTDB 0 pairs：表示一个完整的数据库(0号数据库)，同理SELECTDB 3 pairs表示完整的3号数据库；只有当数据库中有键值对时，RDB文件中才会有该数据库的信息(上图所示的Redis中只有0号和3号数据库有键值对)；如果Redis中所有的数据库都没有键值对，则这一部分直接省略。其中：SELECTDB是一个常量，代表后面跟着的是数据库号码；0和3是数据库号码；pairs则存储了具体的键值对信息，包括key、value值，及其数据类型、内部编码、过期时间、压缩信息等等。</li>
+<li>EOF：常量，标志RDB文件正文内容结束。</li>
+<li>check_sum：前面所有内容的校验和；Redis在载入RBD文件时，会计算前面的校验和并与check_sum值比较，判断文件是否损坏。</li>
+</ul>
+<h3 id="3-压缩"><a href="#3-压缩" class="headerlink" title="(3) 压缩"></a>(3) 压缩</h3><p>Redis默认采用LZF算法对RDB文件进行压缩。虽然压缩耗时，但是可以大大减小RDB文件的体积，因此压缩默认开启；可以通过命令关闭：</p>
+<p>rdbcompression</p>
+<p><strong>RDB文件的压缩并不是针对整个文件进行的，而是对数据库中的字符串进行的，且只有在字符串达到一定长度(20字节)时才会进行</strong></p>
+<h2 id="4-启动时加载"><a href="#4-启动时加载" class="headerlink" title="4. 启动时加载"></a>4. 启动时加载</h2><p>RDB文件的载入工作是在服务器启动时自动执行的，并没有专门的命令。但是由于AOF的优先级更高，因此当AOF开启时，Redis会优先载入AOF文件来恢复数据；只有当AOF关闭时，才会在Redis服务器启动时检测RDB文件，并自动载入。服务器载入RDB文件期间处于阻塞状态，直到载入完成为止。Redis载入RDB文件时，会对RDB文件进行校验，如果文件损坏，则日志中会打印错误，Redis启动失败。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">6013:M 16 Jun 2020 00:09:06.166 * Loading RDB produced by version 6.0.5</span><br><span class="line">6013:M 16 Jun 2020 00:09:06.166 * RDB age 3928 seconds</span><br><span class="line">6013:M 16 Jun 2020 00:09:06.166 * RDB memory usage when created 0.56 Mb</span><br><span class="line">6013:M 16 Jun 2020 00:09:06.166 * DB loaded from disk: 0.000 seconds</span><br><span class="line">6013:M 16 Jun 2020 00:09:06.166 * Ready to accept connections</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-RDB常用配置总结"><a href="#5-RDB常用配置总结" class="headerlink" title="5. RDB常用配置总结"></a>5. RDB常用配置总结</h2><ul>
+<li><strong>save m n</strong>：bgsave自动触发的条件；如果没有save m n配置，相当于自动的RDB持久化关闭，不过此时仍可以通过其他方式触发</li>
+<li><strong>stop-writes-on-bgsave-error yes</strong>：当bgsave出现错误时，Redis是否停止执行写命令；设置为yes，则当硬盘出现问题时，可以及时发现，避免数据的大量丢失；设置为no，则Redis无视bgsave的错误继续执行写命令，当对Redis服务器的系统(尤其是硬盘)使用了监控时，该选项考虑设置为no</li>
+<li><strong>rdbcompression yes</strong>：是否开启RDB文件压缩</li>
+<li>rdbchecksum yes：是否开启RDB文件的校验，在写入文件和读取文件时都起作用；关闭checksum在写入文件和启动文件时大约能带来10%的性能提升，但是数据损坏时无法发现</li>
+<li><strong>dbfilename dump.rdb</strong>：RDB文件名</li>
+<li><strong>dir ./</strong>：RDB文件和AOF文件所在目录</li>
+</ul>
+<h1 id="四-AOF持久化"><a href="#四-AOF持久化" class="headerlink" title="四. AOF持久化"></a>四. AOF持久化</h1><p>RDB持久化是将进程数据写入文件，而AOF持久化(即Append Only File持久化)，则是将Redis执行的每次写命令记录到单独的日志文件中（有点像MySQL的binlog）；当Redis重启时再次执行AOF文件中的命令来恢复数据。</p>
+<p>与RDB相比，AOF的实时性更好，因此已成为主流的持久化方案。</p>
+<h2 id="1-开启AOF"><a href="#1-开启AOF" class="headerlink" title="1. 开启AOF"></a>1. 开启AOF</h2><p>Redis服务器默认开启RDB，关闭AOF；要开启AOF，需要在配置文件中配置</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">############################## APPEND ONLY MODE ###############################</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># By default Redis asynchronously dumps the dataset on disk. This mode is</span></span><br><span class="line"><span class="comment"># good enough in many applications, but an issue with the Redis process or</span></span><br><span class="line"><span class="comment"># a power outage may result into a few minutes of writes lost (depending on</span></span><br><span class="line"><span class="comment"># the configured save points).</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The Append Only File is an alternative persistence mode that provides</span></span><br><span class="line"><span class="comment"># much better durability. For instance using the default data fsync policy</span></span><br><span class="line"><span class="comment"># (see later in the config file) Redis can lose just one second of writes in a</span></span><br><span class="line"><span class="comment"># dramatic event like a server power outage, or a single write if something</span></span><br><span class="line"><span class="comment"># wrong with the Redis process itself happens, but the operating system is</span></span><br><span class="line"><span class="comment"># still running correctly.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># AOF and RDB persistence can be enabled at the same time without problems.</span></span><br><span class="line"><span class="comment"># If the AOF is enabled on startup Redis will load the AOF, that is the file</span></span><br><span class="line"><span class="comment"># with the better durability guarantees.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Please check http://redis.io/topics/persistence for more information.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">appendonly</span> <span class="string">yes</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-执行流程-1"><a href="#2-执行流程-1" class="headerlink" title="2. 执行流程"></a>2. 执行流程</h2><h3 id="1-命令追加-append"><a href="#1-命令追加-append" class="headerlink" title="(1) 命令追加(append)"></a>(1) 命令追加(append)</h3><p>Redis先将写命令追加到缓冲区，而不是直接写入文件，主要是为了避免每次有写命令都直接写入硬盘，导致硬盘IO成为Redis负载的瓶颈。</p>
+<h3 id="2-文件写入-write-和文件同步-sync"><a href="#2-文件写入-write-和文件同步-sync" class="headerlink" title="(2) 文件写入(write)和文件同步(sync)"></a>(2) 文件写入(write)和文件同步(sync)</h3><p>为了提高文件写入效率，在现代操作系统中，当用户调用write函数将数据写入文件时，操作系统通常会将数据暂存到一个内存缓冲区里，当缓冲区被填满或超过了指定时限后，才真正将缓冲区的数据写入到硬盘里。这样的操作虽然提高了效率，但也带来了安全问题：如果计算机停机，内存缓冲区中的数据会丢失；因此系统同时提供了fsync、fdatasync等同步函数，可以强制操作系统立刻将缓冲区中的数据写入到硬盘里，从而确保数据的安全性。</p>
+<ul>
+<li><p><strong>always</strong>: 命令写入aof_buf后立即调用系统fsync操作同步到AOF文件，fsync完成后线程返回。这种情况下，每次有写命令都要同步到AOF文件，硬盘IO成为性能瓶颈，Redis只能支持大约几百TPS写入，严重降低了Redis的性能；即便是使用固态硬盘（SSD），每秒大约也只能处理几万个命令，而且会大大降低SSD的寿命。</p>
+</li>
+<li><p><strong>no</strong>: 命令写入aof_buf后调用系统write操作，不对AOF文件做fsync同步；同步由操作系统负责，通常同步周期为30秒。这种情况下，文件同步的时间不可控，且缓冲区中堆积的数据会很多，数据安全性无法保证。</p>
+</li>
+<li><p><strong>everysec</strong>: 命令写入aof_buf后调用系统write操作，write完成后线程返回；fsync同步文件操作由专门的线程每秒调用一次。everysec是前述两种策略的折中，是性能和数据安全性的平衡，因此是Redis的默认配置，也是我们推荐的配置。</p>
+</li>
+</ul>
+<h3 id="3-文件重写-rewrite"><a href="#3-文件重写-rewrite" class="headerlink" title="(3) 文件重写(rewrite)"></a>(3) 文件重写(rewrite)</h3><p>随着时间流逝，Redis服务器执行的写命令越来越多，AOF文件也会越来越大；过大的AOF文件不仅会影响服务器的正常运行，也会导致数据恢复需要的时间过长。</p>
+<p>文件重写是指定期重写AOF文件，减小AOF文件的体积。需要注意的是，AOF重写是把Redis进程内的数据转化为写命令，同步到新的AOF文件；不会对旧的AOF文件进行任何读取、写入操作!</p>
+<p>关于文件重写需要注意的另一点是：对于AOF持久化来说，文件重写虽然是强烈推荐的，但并不是必须的；即使没有文件重写，数据也可以被持久化并在Redis启动的时候导入；因此在一些实现中，会关闭自动的文件重写，然后通过定时任务在每天的某一时刻定时执行。</p>
+<p>文件重写可以压缩AOF文件的原因:</p>
+<ul>
+<li>过期的数据不再写入文件</li>
+<li>无效的命令不再写入文件：如有些数据被重复设值(set mykey v1, set mykey v2)、有些数据被删除了(sadd myset v1, del myset)等等</li>
+<li>多条命令可以合并为一个：如sadd myset v1, sadd myset v2, sadd myset v3可以合并为sadd myset v1 v2 v3。不过为了防止单条命令过大造成客户端缓冲区溢出，对于list、set、hash、zset类型的key，并不一定只使用一条命令；而是以某个常量为界将命令拆分为多条。这个常量在server.h/AOF_REWRITE_ITEMS_PER_CMD中定义，不可更改，6.0版本中值是64。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AOF_REWRITE_ITEMS_PER_CMD 64</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-文件重写的触发"><a href="#4-文件重写的触发" class="headerlink" title="(4) 文件重写的触发"></a>(4) 文件重写的触发</h4><ul>
+<li>手动触发: bgrewriteaof</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; bgrewriteaof</span><br><span class="line">Background append only file rewriting started</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">20601:M 18 Jun 2020 01:06:10.422 * Background append only file rewriting started by pid 20692</span><br><span class="line">20601:M 18 Jun 2020 01:06:10.622 * AOF rewrite child asks to stop sending diffs.</span><br><span class="line">20692:C 18 Jun 2020 01:06:10.622 * Parent agreed to stop sending diffs. Finalizing AOF...</span><br><span class="line">20692:C 18 Jun 2020 01:06:10.622 * Concatenating 0.00 MB of AOF diff received from parent.</span><br><span class="line">20692:C 18 Jun 2020 01:06:10.622 * SYNC append only file rewrite performed</span><br><span class="line">20692:C 18 Jun 2020 01:06:10.623 * AOF rewrite: 0 MB of memory used by copy-on-write</span><br><span class="line">20601:M 18 Jun 2020 01:06:10.710 * Background AOF rewrite terminated with success</span><br><span class="line">20601:M 18 Jun 2020 01:06:10.710 * Residual parent diff successfully flushed to the rewritten AOF (0.00 MB)</span><br><span class="line">20601:M 18 Jun 2020 01:06:10.710 * Background AOF rewrite finished successfully</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>自动触发: 根据auto-aof-rewrite-min-size和auto-aof-rewrite-percentage参数，以及aof_current_size和aof_base_size状态确定触发时机。<strong>只有当auto-aof-rewrite-min-size和auto-aof-rewrite-percentage两个参数同时满足时，才会自动触发AOF重写，即bgrewriteaof操作。</strong></p>
+<ul>
+<li><strong>auto-aof-rewrite-min-size</strong>：执行AOF重写时，文件的最小体积，默认值为64MB。</li>
+<li><strong>auto-aof-rewrite-percentage</strong>：执行AOF重写时，当前AOF大小(即aof_current_size)和上一次重写时AOF大小(aof_base_size)的比值。</li>
+</ul>
+<p>参数及状态查看方式:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; config get auto-aof-rewrite-min-size</span><br><span class="line">1) <span class="string">"auto-aof-rewrite-min-size"</span></span><br><span class="line">2) <span class="string">"67108864"</span></span><br><span class="line">127.0.0.1:6379&gt; config get auto-aof-rewrite-percentage</span><br><span class="line">1) <span class="string">"auto-aof-rewrite-percentage"</span></span><br><span class="line">2) <span class="string">"100"</span></span><br><span class="line">127.0.0.1:6379&gt; info persistence</span><br><span class="line"><span class="comment"># Persistence</span></span><br><span class="line"><span class="comment">#aof_current_size</span></span><br><span class="line"><span class="comment">#aof_base_size</span></span><br><span class="line">loading:0</span><br><span class="line">rdb_changes_since_last_save:0</span><br><span class="line">rdb_bgsave_in_progress:0</span><br><span class="line">rdb_last_save_time:1592467512</span><br><span class="line">rdb_last_bgsave_status:ok</span><br><span class="line">rdb_last_bgsave_time_sec:-1</span><br><span class="line">rdb_current_bgsave_time_sec:-1</span><br><span class="line">rdb_last_cow_size:0</span><br><span class="line">aof_enabled:1</span><br><span class="line">aof_rewrite_in_progress:0</span><br><span class="line">aof_rewrite_scheduled:0</span><br><span class="line">aof_last_rewrite_time_sec:0</span><br><span class="line">aof_current_rewrite_time_sec:-1</span><br><span class="line">aof_last_bgrewrite_status:ok</span><br><span class="line">aof_last_write_status:ok</span><br><span class="line">aof_last_cow_size:290816</span><br><span class="line">module_fork_in_progress:0</span><br><span class="line">module_fork_last_cow_size:0</span><br><span class="line">aof_current_size:92</span><br><span class="line">aof_base_size:92</span><br><span class="line">aof_pending_rewrite:0</span><br><span class="line">aof_buffer_length:0</span><br><span class="line">aof_rewrite_buffer_length:0</span><br><span class="line">aof_pending_bio_fsync:0</span><br><span class="line">aof_delayed_fsync:0</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="5-文件重写流程"><a href="#5-文件重写流程" class="headerlink" title="(5) 文件重写流程"></a>(5) 文件重写流程</h4></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">graph TB</span><br><span class="line">%% 这是注释，流程图中用到的各种图形画法、连线</span><br><span class="line">rewrite[bgrewriteaof]--1--&gt;Parent[父进程]</span><br><span class="line">Parent --2--&gt;fork[fork]</span><br><span class="line">fork --3.1--&gt;aof_buf(aof_buf)</span><br><span class="line">aof_buf --&gt;oldAOF</span><br><span class="line">fork --3.2--&gt;aof_rewrite_buf[aof_rewrite_buf]</span><br><span class="line">aof_rewrite_buf --5.2--&gt;newAOF[新AOF文件]</span><br><span class="line">Son[子进程] --4--&gt;newAOF</span><br><span class="line">Son[子进程] --5.1--&gt;Parent</span><br><span class="line">newAOF --5.3--&gt; oldAOF[旧AOF文件]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>[1] Redis父进程首先判断当前是否存在正在执行 bgsave/bgrewriteaof的子进程，如果存在则bgrewriteaof命令直接返回，如果存在bgsave命令则等bgsave执行完成后再执行。前面曾介绍过，这个主要是基于性能方面的考虑。</p>
+</li>
+<li><p>[2] 父进程执行fork操作创建子进程，这个过程中父进程是阻塞的。</p>
+</li>
+<li><p>[3.1] 父进程fork后，bgrewriteaof命令返回”Background append only file rewrite started”信息并不再阻塞父进程，并可以响应其他命令。Redis的所有写命令依然写入AOF缓冲区，并根据appendfsync策略同步到硬盘，保证原有AOF机制的正确。</p>
+</li>
+<li><p>[3.2] 由于fork操作使用写时复制技术，子进程只能共享fork操作时的内存数据。由于父进程依然在响应命令，因此Redis使用AOF重写缓冲区(图中的aof_rewrite_buf)保存这部分数据，防止新AOF文件生成期间丢失这部分数据。也就是说，bgrewriteaof执行期间，Redis的写命令同时追加到aof_buf和aof_rewirte_buf两个缓冲区。</p>
+</li>
+<li><p>[4] 子进程根据内存快照，按照命令合并规则写入到新的AOF文件。</p>
+</li>
+<li><p>[5.1] 子进程写完新的AOF文件后，向父进程发信号，父进程更新统计信息，具体可以通过info persistence查看。</p>
+</li>
+<li><p>[5.2] 父进程把AOF重写缓冲区的数据写入到新的AOF文件，这样就保证了新AOF文件所保存的数据库状态和服务器当前状态一致。</p>
+</li>
+<li><p>[5.3] 使用新的AOF文件替换老文件，完成AOF重写。</p>
+</li>
+</ul>
+<h2 id="3-启动时加载"><a href="#3-启动时加载" class="headerlink" title="3. 启动时加载"></a>3. 启动时加载</h2><p>当AOF开启时，Redis启动时会优先载入AOF文件来恢复数据；只有当AOF关闭时，才会载入RDB文件恢复数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">21413:M 18 Jun 2020 02:06:26.474 * Reading RDB preamble from AOF file...</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * Loading RDB produced by version 6.0.5</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * RDB age 3616 seconds</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * RDB memory usage when created 0.56 Mb</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * RDB has an AOF tail</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * Reading the remaining AOF tail...</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * DB loaded from append only file: 0.000 seconds</span><br><span class="line">21413:M 18 Jun 2020 02:06:26.474 * Ready to accept connections</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>文件校验<br>与载入RDB文件类似，Redis载入AOF文件时，会对AOF文件进行校验，如果文件损坏，则日志中会打印错误，Redis启动失败。但如果是AOF文件结尾不完整(机器突然宕机等容易导致文件尾部不完整)，且aof-load-truncated参数开启，则日志中会输出警告，Redis忽略掉AOF文件的尾部，启动成功。aof-load-truncated参数默认是开启的：</p>
+</li>
+<li><p>伪客户端<br>因为Redis的命令只能在客户端上下文中执行，而载入AOF文件时命令是直接从文件中读取的，并不是由客户端发送；因此Redis服务器在载入AOF文件之前，会创建一个没有网络连接的客户端，之后用它来执行AOF文件中的命令，命令执行的效果与带网络连接的客户端完全一样。</p>
+</li>
+</ul>
+<h2 id="4-AOF常用配置总结"><a href="#4-AOF常用配置总结" class="headerlink" title="4. AOF常用配置总结"></a>4. AOF常用配置总结</h2><ul>
+<li><strong>appendonly no</strong>：是否开启AOF</li>
+<li><strong>appendfilename “appendonly.aof”</strong>：AOF文件名</li>
+<li><strong>dir ./</strong>：RDB文件和AOF文件所在目录</li>
+<li><strong>appendfsync everysec</strong>：fsync持久化策略</li>
+<li><strong>no-appendfsync-on-rewrite no</strong>：AOF重写期间是否禁止fsync；如果开启该选项，可以减轻文件重写时CPU和硬盘的负载（尤其是硬盘），但是可能会丢失AOF重写期间的数据；需要在负载和安全性之间进行平衡</li>
+<li><strong>auto-aof-rewrite-percentage 100</strong>：文件重写触发条件之一</li>
+<li><strong>auto-aof-rewrite-min-size 64mb</strong>：文件重写触发提交之一</li>
+<li><strong>aof-load-truncated yes</strong>：如果AOF文件结尾损坏，Redis启动时是否仍载入AOF文件</li>
+</ul>
+<h1 id="五-方案选择与常见问题"><a href="#五-方案选择与常见问题" class="headerlink" title="五. 方案选择与常见问题"></a>五. 方案选择与常见问题</h1><h2 id="1-RDB和AOF的优缺点"><a href="#1-RDB和AOF的优缺点" class="headerlink" title="1. RDB和AOF的优缺点"></a>1. RDB和AOF的优缺点</h2><h3 id="1-RDB持久化"><a href="#1-RDB持久化" class="headerlink" title="(1) RDB持久化"></a>(1) RDB持久化</h3><ul>
+<li>优点：RDB文件紧凑，体积小，网络传输快，适合全量复制；恢复速度比AOF快很多。当然，与AOF相比，RDB最重要的优点之一是对性能的影响相对较小。</li>
+<li>缺点：RDB文件的致命缺点在于其数据快照的持久化方式决定了必然做不到实时持久化，而在数据越来越重要的今天，数据的大量丢失很多时候是无法接受的，因此AOF持久化成为主流。此外，RDB文件需要满足特定格式，兼容性差（如老版本的Redis不兼容新版本的RDB文件）。</li>
+</ul>
+<h3 id="2-AOF持久化"><a href="#2-AOF持久化" class="headerlink" title="(2) AOF持久化"></a>(2) AOF持久化</h3><ul>
+<li>优点: 与RDB持久化相对应，AOF的优点在于支持秒级持久化、兼容性好</li>
+<li>缺点: 是文件大、恢复速度慢、对性能影响大。</li>
+</ul>
+<h2 id="2-持久化策略选择"><a href="#2-持久化策略选择" class="headerlink" title="2. 持久化策略选择"></a>2. 持久化策略选择</h2><ul>
+<li><p>如果Redis中的数据完全丢弃也没有关系（如Redis完全用作DB层数据的cache），那么无论是单机，还是主从架构，都可以不进行任何持久化。</p>
+</li>
+<li><p>在单机环境下（对于个人开发者，这种情况可能比较常见），如果可以接受十几分钟或更多的数据丢失，选择RDB对Redis的性能更加有利；如果只能接受秒级别的数据丢失，应该选择AOF。</p>
+</li>
+<li><p>但在多数情况下，我们都会配置主从环境，slave的存在既可以实现数据的热备，也可以进行读写分离分担Redis读请求，以及在master宕掉后继续提供服务。<br>在这种情况下，一种可行的做法是：</p>
+<ul>
+<li>master：完全关闭持久化（包括RDB和AOF），这样可以让master的性能达到最好</li>
+<li>slave：关闭RDB，开启AOF（如果对数据安全要求不高，开启RDB关闭AOF也可以），并定时对持久化文件进行备份（如备份到其他文件夹，并标记好备份的时间）；然后关闭AOF的自动重写，然后添加定时任务，在每天Redis闲时（如凌晨12点）调用bgrewriteaof。</li>
+</ul>
+<p><em>这里需要解释一下，为什么开启了主从复制，可以实现数据的热备份，还需要设置持久化呢？因为在一些特殊情况下，主从复制仍然不足以保证数据的安全</em><br>例如：</p>
+<ul>
+<li><strong>master和slave进程同时停止</strong>：考虑这样一种场景，如果master和slave在同一栋大楼或同一个机房，则一次停电事故就可能导致master和slave机器同时关机，Redis进程停止；如果没有持久化，则面临的是数据的完全丢失。</li>
+<li><strong>master误重启</strong>：考虑这样一种场景，master服务因为故障宕掉了，如果系统中有自动拉起机制（即检测到服务停止后重启该服务）将master自动重启，由于没有持久化文件，那么master重启后数据是空的，slave同步数据也变成了空的；如果master和slave都没有持久化，同样会面临数据的完全丢失。需要注意的是，即便是使用了哨兵(关于哨兵后面会有文章介绍)进行自动的主从切换，也有可能在哨兵轮询到master之前，便被自动拉起机制重启了。因此，应尽量避免“自动拉起机制”和“不做持久化”同时出现。</li>
+</ul>
+</li>
+<li><p>异地灾备：上述讨论的几种持久化策略，针对的都是一般的系统故障，如进程异常退出、宕机、断电等，这些故障不会损坏硬盘。但是对于一些可能导致硬盘损坏的灾难情况，如火灾地震，就需要进行异地灾备。<br>例如:<br>对于单机的情形，可以定时将RDB文件或重写后的AOF文件，通过scp拷贝到远程机器，如阿里云、AWS等；对于主从的情形，可以定时在master上执行bgsave，然后将RDB文件拷贝到远程机器，或者在slave上执行bgrewriteaof重写AOF文件后，将AOF文件拷贝到远程机器上。一般来说，由于RDB文件文件小、恢复快，因此灾难恢复常用RDB文件；异地备份的频率根据数据安全性的需要及其他条件来确定，但最好不要低于一天一次。</p>
+</li>
+</ul>
+<h2 id="3-fork阻塞-CPU的阻塞"><a href="#3-fork阻塞-CPU的阻塞" class="headerlink" title="3. fork阻塞: CPU的阻塞"></a>3. fork阻塞: CPU的阻塞</h2><p>限制Redis单机内存不能过大的因素:</p>
+<ul>
+<li>当面对请求的暴增，需要从库扩容时，Redis内存过大会导致扩容时间太长；</li>
+<li>当主机宕机时，切换主机后需要挂载从库，Redis内存过大导致挂载速度过慢；</li>
+<li>持久化过程中的fork操作</li>
+</ul>
+<p><em>备注: fork操作</em><br><em>父进程通过fork操作可以创建子进程；子进程创建后，父子进程共享代码段，不共享进程的数据空间，但是子进程会获得父进程的数据空间的副本。在操作系统fork的实际实现中，基本都采用了写时复制技术，即在父/子进程试图修改数据空间之前，父子进程实际上共享数据空间；但是当父/子进程的任何一个试图修改数据空间时，操作系统会为修改的那一部分(内存的一页)制作一个副本。</em><br><em>虽然fork时，子进程不会复制父进程的数据空间，但是会复制内存页表（页表相当于内存的索引、目录）；父进程的数据空间越大，内存页表越大，fork时复制耗时也会越多。</em><br>在Redis中，无论是RDB持久化的bgsave，还是AOF重写的bgrewriteaof，都需要fork出子进程来进行操作。如果Redis内存过大，会导致fork操作时复制内存页表耗时过多；而Redis主进程在进行fork时，是完全阻塞的，也就意味着无法响应客户端的请求，会造成请求延迟过大。</p>
+<p>对于不同的硬件、不同的操作系统，fork操作的耗时会有所差别，一般来说，如果Redis单机内存达到了10GB，fork时耗时可能会达到百毫秒级别（如果使用Xen虚拟机，这个耗时可能达到秒级别）。因此，<strong>一般来说Redis单机内存一般要限制在10GB以内</strong>；不过这个数据并不是绝对的，可以通过观察线上环境fork的耗时来进行调整。<br>观察的方法如下：执行命令info stats，查看latest_fork_usec的值，单位为微秒。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; info stats</span><br><span class="line"><span class="comment"># Stats</span></span><br><span class="line">total_connections_received:1</span><br><span class="line">total_commands_processed:1</span><br><span class="line">instantaneous_ops_per_sec:0</span><br><span class="line">total_net_input_bytes:68</span><br><span class="line">total_net_output_bytes:39</span><br><span class="line">instantaneous_input_kbps:0.00</span><br><span class="line">instantaneous_output_kbps:0.00</span><br><span class="line">rejected_connections:0</span><br><span class="line">sync_full:0</span><br><span class="line">sync_partial_ok:0</span><br><span class="line">sync_partial_err:0</span><br><span class="line">expired_keys:0</span><br><span class="line">expired_stale_perc:0.00</span><br><span class="line">expired_time_cap_reached_count:0</span><br><span class="line">expire_cycle_cpu_milliseconds:37</span><br><span class="line">evicted_keys:0</span><br><span class="line">keyspace_hits:0</span><br><span class="line">keyspace_misses:0</span><br><span class="line">pubsub_channels:0</span><br><span class="line">pubsub_patterns:0</span><br><span class="line">latest_fork_usec:0</span><br><span class="line">migrate_cached_sockets:0</span><br><span class="line">slave_expires_tracked_keys:0</span><br><span class="line">active_defrag_hits:0</span><br><span class="line">active_defrag_misses:0</span><br><span class="line">active_defrag_key_hits:0</span><br><span class="line">active_defrag_key_misses:0</span><br><span class="line">tracking_total_keys:0</span><br><span class="line">tracking_total_items:0</span><br><span class="line">tracking_total_prefixes:0</span><br><span class="line">unexpected_error_replies:0</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+
+<p>为了减轻fork操作带来的阻塞问题，除了控制Redis单机内存的大小以外，还可以适度放宽AOF重写的触发条件、选用物理机或高效支持fork操作的虚拟化技术等，例如使用Vmware或KVM虚拟机，不要使用Xen虚拟机。</p>
+<h2 id="4-AOF追加阻塞-硬盘的阻塞"><a href="#4-AOF追加阻塞-硬盘的阻塞" class="headerlink" title="4. AOF追加阻塞: 硬盘的阻塞"></a>4. AOF追加阻塞: 硬盘的阻塞</h2><p>在AOF中，如果AOF缓冲区的文件同步策略为everysec，则：在主线程中，命令写入aof_buf后调用系统write操作，write完成后主线程返回；fsync同步文件操作由专门的文件同步线程每秒调用一次。<br>这种做法的问题在于，如果硬盘负载过高，那么fsync操作可能会超过1s；如果Redis主线程持续高速向aof_buf写入命令，硬盘的负载可能会越来越大，IO资源消耗更快；如果此时Redis进程异常退出，丢失的数据也会越来越多，可能远超过1s。<br>为此，Redis的处理策略是这样的：主线程每次进行AOF会对比上次fsync成功的时间；如果距上次不到2s，主线程直接返回；如果超过2s，则主线程阻塞直到fsync同步完成。因此，如果系统硬盘负载过大导致fsync速度太慢，会导致Redis主线程的阻塞；此外，使用everysec配置，AOF最多可能丢失2s的数据，而不是1s。</p>
+<p><strong>AOF追加阻塞问题定位的方法：</strong></p>
+<ul>
+<li><p>监控info Persistence中的aof_delayed_fsync：当AOF追加阻塞发生时（即主线程等待fsync而阻塞），该指标累加。</p>
+</li>
+<li><p>AOF阻塞时的Redis日志：<br>Asynchronous AOF fsync is taking too long (disk is busy?). Writing the AOF buffer without waiting for fsync to complete, this may slow down Redis.</p>
+</li>
+<li><p>如果AOF追加阻塞频繁发生，说明系统的硬盘负载太大；可以考虑更换IO速度更快的硬盘，或者通过IO监控分析工具对系统的IO负载进行分析，如iostat（系统级io）、iotop（io版的top）、pidstat等。</p>
+</li>
+</ul>
+<h2 id="5-info命令与持久化"><a href="#5-info命令与持久化" class="headerlink" title="5. info命令与持久化"></a>5. info命令与持久化</h2><h3 id="1-使用info-persistence命令查看"><a href="#1-使用info-persistence命令查看" class="headerlink" title="(1) 使用info persistence命令查看"></a>(1) 使用info persistence命令查看</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; info persistence</span><br><span class="line"><span class="comment"># Persistence</span></span><br><span class="line">loading:0</span><br><span class="line">rdb_changes_since_last_save:0</span><br><span class="line">rdb_bgsave_in_progress:0</span><br><span class="line">rdb_last_save_time:1592471186</span><br><span class="line"><span class="comment">#上次bgsave 执行结果，可以用于发现bgsave错误</span></span><br><span class="line">rdb_last_bgsave_status:ok</span><br><span class="line"><span class="comment">#上次bgsave执行时间（单位是s），可以用于发现bgsave是否耗时过长</span></span><br><span class="line">rdb_last_bgsave_time_sec:-1</span><br><span class="line">rdb_current_bgsave_time_sec:-1</span><br><span class="line">rdb_last_cow_size:0</span><br><span class="line"><span class="comment">#AOF是否开启(1:开启/0:关闭)</span></span><br><span class="line">aof_enabled:1</span><br><span class="line">aof_rewrite_in_progress:0</span><br><span class="line">aof_rewrite_scheduled:0</span><br><span class="line"><span class="comment">#上次文件重写执行时间（单位是s），可以用于发现文件重写是否耗时过长</span></span><br><span class="line">aof_last_rewrite_time_sec:-1</span><br><span class="line">aof_current_rewrite_time_sec:-1</span><br><span class="line"><span class="comment">#上次bgrewrite执行结果，可以用于发现bgrewrite错误</span></span><br><span class="line">aof_last_bgrewrite_status:ok</span><br><span class="line">aof_last_write_status:ok</span><br><span class="line">aof_last_cow_size:0</span><br><span class="line">module_fork_in_progress:0</span><br><span class="line">module_fork_last_cow_size:0</span><br><span class="line">aof_current_size:92</span><br><span class="line">aof_base_size:92</span><br><span class="line">aof_pending_rewrite:0</span><br><span class="line"><span class="comment">#aof缓存区大小和aof重写缓冲区大小</span></span><br><span class="line">aof_buffer_length:0</span><br><span class="line">aof_rewrite_buffer_length:0</span><br><span class="line">aof_pending_bio_fsync:0</span><br><span class="line"><span class="comment">#AOF追加阻塞情况的统计</span></span><br><span class="line">aof_delayed_fsync:0</span><br><span class="line">127.0.0.1:6379&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-info-stats命令查看"><a href="#2-info-stats命令查看" class="headerlink" title="(2) info stats命令查看"></a>(2) info stats命令查看</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; info stats</span><br><span class="line"><span class="comment"># Stats</span></span><br><span class="line">total_connections_received:1</span><br><span class="line">total_commands_processed:3</span><br><span class="line">instantaneous_ops_per_sec:0</span><br><span class="line">total_net_input_bytes:158</span><br><span class="line">total_net_output_bytes:1537</span><br><span class="line">instantaneous_input_kbps:0.00</span><br><span class="line">instantaneous_output_kbps:0.00</span><br><span class="line">rejected_connections:0</span><br><span class="line">sync_full:0</span><br><span class="line">sync_partial_ok:0</span><br><span class="line">sync_partial_err:0</span><br><span class="line">expired_keys:0</span><br><span class="line">expired_stale_perc:0.00</span><br><span class="line">expired_time_cap_reached_count:0</span><br><span class="line">expire_cycle_cpu_milliseconds:55</span><br><span class="line">evicted_keys:0</span><br><span class="line">keyspace_hits:0</span><br><span class="line">keyspace_misses:0</span><br><span class="line">pubsub_channels:0</span><br><span class="line">pubsub_patterns:0</span><br><span class="line"><span class="comment">#fork的耗时</span></span><br><span class="line">latest_fork_usec:0</span><br><span class="line">migrate_cached_sockets:0</span><br><span class="line">slave_expires_tracked_keys:0</span><br><span class="line">active_defrag_hits:0</span><br><span class="line">active_defrag_misses:0</span><br><span class="line">active_defrag_key_hits:0</span><br><span class="line">active_defrag_key_misses:0</span><br><span class="line">tracking_total_keys:0</span><br><span class="line">tracking_total_items:0</span><br><span class="line">tracking_total_prefixes:0</span><br><span class="line">unexpected_error_replies:0</span><br></pre></td></tr></table></figure>
+            <div class="clearfix"></div>
+            <hr class="nogutter">
+        </div>
+        <nav class="m-pagination col-md-8 col-md-offset-2 col-sm-24" role="pagination">
+    
+    
+    <a class="pull-right" href="/alexmillerning.github.io/2020/06/20/Redis%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+        Redis基础知识 →
+    </a>
+    
+</nav>
+
+        <div class="col-md-8 col-md-offset-2 col-sm-24"><script type="text/javascript">
+  /**
+   * 搜狐畅言
+   */
+
+  /*
+  document.write('<div id="SOHUCS" sid="' + window.location.pathname.slice(1) + '" ></div>');
+
+  window.onload = function () {
+    (function () {
+      var appid = 'cytXXXX';
+      var conf = 'prod_xxxxxxxxxxxxxxxxx';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      var loadJs = function (d, a, id) {
+        var c = document.getElementsByTagName("head")[0] || document.head || document.documentElement;
+        var b = document.createElement("script");
+        b.setAttribute("type", "text/javascript");
+        b.setAttribute("charset", "UTF-8");
+        b.setAttribute("src", d);
+        if (id) {
+          b.setAttribute("id", id);
+        }
+        if (typeof a === "function") {
+          if (window.attachEvent) {
+            b.onreadystatechange = function () {
+              var e = b.readyState;
+              if (e === "loaded" || e === "complete") {
+                b.onreadystatechange = null;
+                a()
+              }
+            }
+          } else {
+            b.onload = a
+          }
+        }
+        c.appendChild(b)
+      };
+
+      loadJs("https://changyan.sohu.com/upload/changyan.js", function () {
+        window.changyan.api.config({
+          appid: appid,
+          conf: conf
+        })
+      });
+    })();
+  }
+  */
+
+</script>
+</div>
+    </div>
+</section>
+
+
+      
+<!-- ============================ Footer =========================== -->
+
+<footer>
+    <div class="container">
+            <div class="copy">
+                <p>
+                    &copy; 2014<script>new Date().getFullYear()>2010&&document.write("-"+new Date().getFullYear());</script>, Content By John Doe. All Rights Reserved.
+                </p>
+                <p>Theme By <a href="//go.kieran.top" target="_blank" rel="noopener" style="color: #767D84">Kieran</a></p>
+            </div>
+            <div class="social">
+                <ul>
+                    
+                    <li><a href="https://github.com/" title="Github" target="_blank"><i class="icon-github"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://twitter.com/" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://www.facebook.com/" title="Facebook" target="_blank"><i class="icon-facebook"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="https://google.com/" title="Google-Plus" target="_blank"><i class="icon-google-plus"></i></a>&nbsp;</li>
+                    
+                    
+                    <li><a href="http://weibo.com/" title="Sina-Weibo" target="_blank"><i class="icon-sina-weibo"></i></a>&nbsp;</li>
+                    
+                </ul>
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+</footer>
+
+<!-- ============================ END Footer =========================== -->
+      <!-- Load our scripts -->
+<!-- Resizable 'on-demand' full-height hero -->
+<script type="text/javascript">
+    var resizeHero = function () {
+        var hero = $(".cover,.heightblock"),
+            window1 = $(window);
+        hero.css({
+            "height": window1.height()
+        });
+    };
+
+    resizeHero();
+
+    $(window).resize(function () {
+        resizeHero();
+    });
+</script>
+<script src="/alexmillerning.github.io/js/plugins.min.js"></script><!-- Bootstrap core and concatenated plugins always load here -->
+<script src="/alexmillerning.github.io/js/scripts.js"></script><!-- Theme scripts -->
+
+
+<link rel="stylesheet" href="/alexmillerning.github.io/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/alexmillerning.github.io/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$('#intro').find('img').each(function(){
+  var alt = this.alt;
+
+  if (alt){
+    $(this).after('<span class="caption" style="display:none">' + alt + '</span>');
+  }
+
+  $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox" rel="gallery" />');
+});
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+
+      
+</body>
+</html>
